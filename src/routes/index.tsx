@@ -1,4 +1,3 @@
-
 import { Suspense, lazy, type FC, type JSX, type LazyExoticComponent } from "react";
 import { type RouteObject } from "react-router-dom";
 import { Navigate } from "react-router-dom";
@@ -11,6 +10,8 @@ const RoomInformation = lazy(() => import("../pages/AdminTemplates/Room-Informat
 const RoomManagement = lazy(() => import("../pages/AdminTemplates/Room-Management"));
 const AuthTemplates = lazy(() => import("../pages/AuthTemplates"));
 const LoginPage = lazy(() => import("../pages/AuthTemplates/LoginPage"));
+ //Home
+ const HomeTemplate = lazy(() => import("../pages/HomeTemplate"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
   return (
@@ -22,6 +23,15 @@ const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
 
 export const routes: RouteObject[] = [
   {
+    path: "/",
+    element: withSuspense(HomeTemplate),
+    children: [
+      // { index: true, element: withSuspense(HomePage) }, // "/" load HomePage
+      // có thể thêm các page con khác ở đây, ví dụ:
+      // { path: "about", element: withSuspense(AboutPage) },
+    ],
+  },
+  {
     path: "/auth",
     element: withSuspense(AuthTemplates),
     children: [
@@ -29,7 +39,7 @@ export const routes: RouteObject[] = [
       { path: "register", element: withSuspense(RegisterPage) },
     ],
   },
-    { path: "/login", element: <Navigate to="/auth/login" replace /> },
+  { path: "/login", element: <Navigate to="/auth/login" replace /> },
   {
     path: "/admin",
     element: withSuspense(AdminTemplates),
@@ -37,7 +47,6 @@ export const routes: RouteObject[] = [
       { index: true, element: withSuspense(Dashboard) },
       { path: "dashboard", element: withSuspense(Dashboard) },
       { path: "room-management", element: withSuspense(RoomManagement) },
-
     ],
   },
 ];
