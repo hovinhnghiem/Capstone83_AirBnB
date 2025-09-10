@@ -3,79 +3,72 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginApi } from "@/services/auth.api";
-import { useAuthStore } from "@/store/auth.slice";
-import { useNavigate , Link } from "react-router-dom";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useNavigate, Link } from "react-router-dom";
+import { loginApi } from "@/services/auth.api";
 
-const schema = z.object({
-  email: z.string().email("Email không hợp lệ").nonempty("Email không được để trống"),
-  password: z
-    .string()
-    .min(6, "Mật khẩu ít nhất 6 ký tự")
-    .max(32, "Tối đa 32 ký tự")
-    .nonempty("Mật khẩu không được để trống"),
+const loginSchema = z.object({
+  email: z.string().email("Email không hợp lệ"),
+  password: z.string().min(6, "Mật khẩu ít nhất 6 ký tự"),
 });
 
-type LoginForm = z.infer<typeof schema>;
+export type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const { setUser } = useAuthStore();
   const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: zodResolver(schema),
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
   const mutation = useMutation({
     mutationFn: (values: LoginForm) => loginApi(values),
-    onSuccess: (data: any) => {
-      if (data) {
-        setUser(data);
-        navigate(data.role === "ADMIN" ? "/admin/dashboard" : "/", { replace: true });
-      }
-    },
-    onError: (err) => {
-      console.error(" Login failed:", err);
-    },
+    onSuccess: (data) => {
+  localStorage.setItem("accessToken", data.accessToken);
+  localStorage.setItem("currentUser", JSON.stringify(data)); // lưu toàn bộ data
+
+  alert("✅ Đăng nhập thành công!");
+
+  if (data.role === "ADMIN") {
+    navigate("/dashboard", { replace: true });
+  } else {
+    navigate("/", { replace: true });
+  }
+}
   });
 
-  const onSubmit = (values: LoginForm) => mutation.mutate(values);
+  const onSubmit: SubmitHandler<LoginForm> = (values) => {
+    mutation.mutate(values);
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <Card className="w-full max-w-md rounded-2xl shadow-md">
         <CardHeader>
-          <CardTitle className="text-center">Login</CardTitle>
+          <CardTitle className="text-center text-2xl font-semibold">Login</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Email */}
             <div>
               <Input type="email" placeholder="Email" {...register("email")} />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
             </div>
 
+            {/* Password */}
             <div>
               <Input type="password" placeholder="Password" {...register("password")} />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
-              )}
+              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
             </div>
 
             <Button type="submit" className="w-full" disabled={mutation.isPending}>
               {mutation.isPending ? "Logging in..." : "Login"}
             </Button>
-        
+
             <Button asChild variant="outline" className="w-full">
-              <Link to="/auth/register">Create an account</Link>
+              <Link to="/auth/register">Chưa có tài khoản? Đăng ký</Link>
             </Button>
           </form>
         </CardContent>

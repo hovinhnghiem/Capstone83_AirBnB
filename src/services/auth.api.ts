@@ -19,23 +19,9 @@ export interface RegisterValues {
   role: Role;
 }
 
-export const loginApi = async (
-  data: LoginDataRequest
-): Promise<CurrentUser | null> => {
-  try {
-    const response = await api.post<BaseApiResponse<CurrentUser>>(
-      "/auth/signin",
-      data
-    );
-    return response.data.content;
-  } catch (error: any) {
-    console.error("loginApi error:", {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data,
-    });
-    return null;
-  }
+export const loginApi = async (values: LoginDataRequest) => {
+  const res = await api.post<BaseApiResponse<CurrentUser>>("/auth/signin", values);
+  return res.data.content; // content chứa { accessToken, user: { id, name, email, role } }
 };
 
 export const registerApi = async (
