@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { FaSearch, FaBars, FaGlobe } from "react-icons/fa";
-import LoginModal from "../../LoginPopup";
+import { Link } from "react-router-dom";
+
+
 
 const Header: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
+  // state
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="relative h-[80vh] bg-cover bg-center" style={{ backgroundImage: "url('/images/bg-house.jpg')" }}>
@@ -23,6 +27,12 @@ const Header: React.FC = () => {
 
         {/* Right buttons */}
         <div className="flex items-center space-x-4">
+         <Link
+          to="/auth/register"
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+        >
+          Đăng ký
+        </Link>
           <button onClick={() => setShowLogin(true)} className="px-3 py-1 bg-red-500 rounded-full hover:bg-red-600">
             Login
           </button>
@@ -61,9 +71,6 @@ const Header: React.FC = () => {
           <FaSearch />
         </button>
       </div>
-
-      {/* Login Modal */}
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </div>
   );
 };
