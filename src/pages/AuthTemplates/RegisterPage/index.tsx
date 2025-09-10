@@ -36,7 +36,7 @@ export default function RegisterPage() {
       password: "",
       phone: "",
       birthday: "",
-      gender: "false",
+      gender: "true",
       role: "USER", 
     },
   });

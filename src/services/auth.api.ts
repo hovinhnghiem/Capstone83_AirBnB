@@ -1,19 +1,10 @@
 import api from "./api";
+import type { BaseApiResponse } from "@/interfaces/base.interface";
+import type { CurrentUser } from "@/interfaces/auth.interface";
 
 export type Role = "ADMIN" | "USER";
 
-export interface CurrentUser {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  birthday: string;
-  gender: boolean;
-  role: Role;
-  accessToken: string;
-}
-
-export interface LoginValues {
+export interface LoginDataRequest {
   email: string;
   password: string;
 }
@@ -28,36 +19,40 @@ export interface RegisterValues {
   role: Role;
 }
 
-interface ApiResponse<T = any> {
-  content: T;
-  message?: string;
-  statusCode?: number;
-  [key: string]: any;
-}
-
 export const loginApi = async (
-  values: LoginValues
+  data: LoginDataRequest
 ): Promise<CurrentUser | null> => {
   try {
-    const res = await api.post<ApiResponse<CurrentUser>>(
-      "/api/auth/signin",
-      values
+    const response = await api.post<BaseApiResponse<CurrentUser>>(
+      "/auth/signin",
+      data
     );
-    return res.data.content;
-  } catch (error) {
-    console.error("🔥 loginApi error:", error);
+    return response.data.content;
+  } catch (error: any) {
+    console.error("loginApi error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     return null;
   }
 };
 
-export const registerApi = async <T = any>(
+export const registerApi = async (
   values: RegisterValues
-): Promise<T | null> => {
+): Promise<RegisterValues | null> => {
   try {
-    const res = await api.post<ApiResponse<T>>("/api/auth/signup", values);
+    const res = await api.post<BaseApiResponse<RegisterValues>>(
+      "/auth/signup",
+      values
+    );
     return res.data.content;
-  } catch (error) {
-    console.error("🔥 registerApi error:", error);
+  } catch (error: any) {
+    console.error("🔥 registerApi error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
     return null;
   }
 };

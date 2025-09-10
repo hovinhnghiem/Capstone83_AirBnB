@@ -42,7 +42,7 @@ export default function LoginPage() {
       }
     },
     onError: (err) => {
-      console.error("❌ Login failed:", err);
+      console.error(" Login failed:", err);
     },
   });
 
