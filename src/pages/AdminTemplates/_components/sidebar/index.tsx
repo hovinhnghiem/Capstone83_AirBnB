@@ -36,7 +36,7 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
           </NavItem>
 
           <NavItem
-            to="/admin/users"
+            to="/admin/user-management"
             icon={<Users className="h-4 w-4" />}
             onClick={onNavigate}
           >

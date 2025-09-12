@@ -3,7 +3,7 @@ export interface CurrentUser {
   name: string;
   email: string;
   password: string;
-  phone: string;
+  phone?: string;
   birthday: string;
   gender: boolean;
   role: "ADMIN" | "USER";

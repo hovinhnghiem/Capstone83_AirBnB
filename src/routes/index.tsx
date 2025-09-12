@@ -1,3 +1,4 @@
+import ProtectedRoute from "@/pages/AdminTemplates/_components/protected-route";
 import { Suspense, lazy, type FC, type JSX, type LazyExoticComponent } from "react";
 import { type RouteObject } from "react-router-dom";
 import { Navigate } from "react-router-dom";
@@ -10,7 +11,8 @@ const RoomInformation = lazy(() => import("../pages/AdminTemplates/Room-Informat
 const RoomManagement = lazy(() => import("../pages/AdminTemplates/Room-Management"));
 const AuthTemplates = lazy(() => import("../pages/AuthTemplates"));
 const LoginPage = lazy(() => import("../pages/AuthTemplates/LoginPage"));
- //Home
+const UserManagement = lazy(() => import("../pages/AdminTemplates/User-Management"));
+
  const HomeTemplate = lazy(() => import("../pages/HomeTemplate"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
@@ -42,11 +44,16 @@ export const routes: RouteObject[] = [
   { path: "/login", element: <Navigate to="/auth/login" replace /> },
   {
     path: "/admin",
-    element: withSuspense(AdminTemplates),
+    element: (
+      <ProtectedRoute>
+        {withSuspense(AdminTemplates)}
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: withSuspense(Dashboard) },
       { path: "dashboard", element: withSuspense(Dashboard) },
       { path: "room-management", element: withSuspense(RoomManagement) },
+      { path: "user-management", element: withSuspense(UserManagement) },
     ],
   },
 ];

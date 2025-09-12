@@ -56,7 +56,7 @@ export default function RegisterPage() {
       navigate("/auth/login", { replace: true });
     },
     onError: (err) => {
-      console.error("❌ Register failed:", err);
+      console.error(" Register failed:", err);
     },
   });
 
