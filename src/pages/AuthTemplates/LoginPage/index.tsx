@@ -13,7 +13,7 @@ const schema = z.object({
   email: z.string().email("Email không hợp lệ").nonempty("Email không được để trống"),
   password: z
     .string()
-    .min(6, "Mật khẩu ít nhất 6 ký tự")
+    .min(5, "Mật khẩu ít nhất 5 ký tự")
     .max(32, "Tối đa 32 ký tự")
     .nonempty("Mật khẩu không được để trống"),
 });
@@ -35,12 +35,19 @@ export default function LoginPage() {
 
   const mutation = useMutation({
     mutationFn: (values: LoginForm) => loginApi(values),
-    onSuccess: (data: any) => {
-      if (data) {
-        setUser(data);
-        navigate(data.role === "ADMIN" ? "/admin/dashboard" : "/", { replace: true });
-      }
-    },
+    // onSuccess: (data: any) => {
+    //   if (data) {
+    //     setUser(data);
+    //     navigate(data.role === "ADMIN" ? "/admin/dashboard" : "/", { replace: true });
+    //   }
+    // },
+    onSuccess: (data) => {
+  if (data) {
+    setUser(data);
+    const role = data.role?.toUpperCase();
+    navigate(role === "ADMIN" ? "/admin/dashboard" : "/", { replace: true });
+  }
+},
     onError: (err) => {
       console.error(" Login failed:", err);
     },

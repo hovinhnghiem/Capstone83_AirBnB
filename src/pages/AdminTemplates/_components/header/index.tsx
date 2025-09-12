@@ -18,16 +18,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SheetTrigger } from "@/components/ui/sheet";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/auth.slice";
 
 type HeaderProps = {
   onOpenSidebar: () => void;
 };
 
 export default function Header({ onOpenSidebar }: HeaderProps) {
+  const navigate = useNavigate();
+  const { setUser } = useAuthStore();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/auth/login", { replace: true });
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-14 items-center gap-2 px-3 md:px-6">
-        {/* Mobile toggle */}
         <div className="flex items-center gap-2 md:hidden">
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" onClick={onOpenSidebar}>
@@ -37,7 +47,6 @@ export default function Header({ onOpenSidebar }: HeaderProps) {
           </SheetTrigger>
         </div>
 
-        {/* Brand + page title */}
         <div className="flex items-center gap-2">
           <LayoutDashboard className="h-5 w-5" />
           <span className="font-semibold">Admin</span>
@@ -47,7 +56,6 @@ export default function Header({ onOpenSidebar }: HeaderProps) {
           </span>
         </div>
 
-        {/* Actions */}
         <div className="ml-auto flex items-center gap-2">
           <div className="relative hidden sm:flex items-center">
             <Search className="absolute left-2 h-4 w-4 text-muted-foreground" />
@@ -75,7 +83,9 @@ export default function Header({ onOpenSidebar }: HeaderProps) {
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleLogout}>
+                Log out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

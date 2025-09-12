@@ -17,11 +17,17 @@ api.interceptors.request.use((config: any) => {
     ...config.headers,
     TokenCybersoft: import.meta.env.VITE_TOKEN_CYBERSOFT,
   };
-
-  if (accessToken) {
+  if (
+    accessToken &&
+    !config.url?.includes("/auth/signin") &&
+    !config.url?.includes("/auth/signup")
+  ) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
+  if (config.method && config.method !== "get") {
+    config.headers["Content-Type"] = "application/json";
+  }
   return config;
 });
 
