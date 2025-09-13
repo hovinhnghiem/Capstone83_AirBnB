@@ -19,7 +19,7 @@ export interface RegisterValues {
   role: Role;
 }
 
-<<<<<<< HEAD
+
 export const loginApi = async (
   data: LoginDataRequest
 ): Promise<CurrentUser | null> => {
@@ -61,11 +61,7 @@ export const updateUserApi = async (
     });
     return null;
   }
-=======
-export const loginApi = async (values: LoginDataRequest) => {
-  const res = await api.post<BaseApiResponse<CurrentUser>>("/auth/signin", values);
-  return res.data.content; // content chứa { accessToken, user: { id, name, email, role } }
->>>>>>> 624ea43 (proccesging fix login)
+
 };
 
 export const registerApi = async (
