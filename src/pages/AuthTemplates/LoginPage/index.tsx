@@ -54,6 +54,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-red-100 flex items-center justify-center p-4 relative overflow-hidden">
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-6 left-6 flex items-center space-x-2 text-gray-600 hover:text-rose-600 transition-colors group cursor-pointer z-20"
+      >
+        <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        <span className="font-medium">Về trang chủ</span>
+      </button>
       {/* Background Decorations */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-rose-200 to-pink-300 rounded-full opacity-20 blur-3xl"></div>
