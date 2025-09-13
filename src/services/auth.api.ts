@@ -19,6 +19,7 @@ export interface RegisterValues {
   role: Role;
 }
 
+
 export const loginApi = async (
   data: LoginDataRequest
 ): Promise<CurrentUser | null> => {
@@ -60,6 +61,7 @@ export const updateUserApi = async (
     });
     return null;
   }
+
 };
 
 export const registerApi = async (

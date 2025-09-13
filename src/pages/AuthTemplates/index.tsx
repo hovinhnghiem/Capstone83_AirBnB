@@ -25,16 +25,15 @@ export default function AuthTemplates() {
         </p>
       </div>
 
-      <Card className="w-full max-w-md shadow-lg rounded-2xl border">
+      
         <CardHeader>
           <CardTitle className="text-center text-lg font-semibold">
-            Login
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Outlet />
         </CardContent>
-      </Card>
+     
 
       <footer className="mt-6 text-xs text-muted-foreground">
         © {new Date().getFullYear()} MyApp. All rights reserved.
