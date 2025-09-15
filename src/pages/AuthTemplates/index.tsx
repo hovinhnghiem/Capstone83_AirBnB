@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.slice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {  CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AuthTemplates() {
   const { user } = useAuthStore();

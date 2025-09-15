@@ -19,7 +19,6 @@ export interface RegisterValues {
   role: Role;
 }
 
-
 export const loginApi = async (
   data: LoginDataRequest
 ): Promise<CurrentUser | null> => {
@@ -34,7 +33,7 @@ export const loginApi = async (
     localStorage.setItem("user", JSON.stringify(fullUser));
     return fullUser;
   } catch (error: any) {
-    console.error("🔥 loginApi error:", {
+    console.error("loginApi error:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,
@@ -54,14 +53,27 @@ export const updateUserApi = async (
     );
     return response.data.content;
   } catch (error: any) {
-    console.error("🔥 updateUserApi error:", {
+    console.error("updateUserApi error:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,
     });
     return null;
   }
+};
 
+export const deleteUserApi = async (userId: number): Promise<boolean> => {
+  try {
+    await api.delete(`/users?id=${userId}`);
+    return true;
+  } catch (error: any) {
+    console.error("deleteUserApi error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    return false;
+  }
 };
 
 export const registerApi = async (
@@ -74,7 +86,7 @@ export const registerApi = async (
     );
     return res.data.content;
   } catch (error: any) {
-    console.error("🔥 registerApi error:", {
+    console.error("registerApi error:", {
       message: error.message,
       status: error.response?.status,
       data: error.response?.data,
