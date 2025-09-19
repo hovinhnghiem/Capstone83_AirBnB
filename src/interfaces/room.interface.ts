@@ -33,3 +33,11 @@ export interface EditRoomModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+export interface LocationType {
+  id: number;
+  tenViTri: string;
+  tinhThanh: string;
+  quocGia: string;
+  hinhAnh: string;
+}

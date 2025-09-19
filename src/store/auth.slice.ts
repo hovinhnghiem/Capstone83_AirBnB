@@ -16,6 +16,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } else {
       localStorage.removeItem("user");
     }
+    console.log("User set:", user);
     set({ user });
   },
   clearUser: () => {
