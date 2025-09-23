@@ -54,7 +54,6 @@ export default function AddRoomModal({
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // fetch locations
   const { data: locations = [], isLoading } = useQuery<LocationType[]>({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -105,7 +104,6 @@ export default function AddRoomModal({
         </DialogHeader>
 
         <div className="space-y-6 max-h-[70vh] overflow-y-auto">
-          {/* Basic info */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium">Room Name</label>
