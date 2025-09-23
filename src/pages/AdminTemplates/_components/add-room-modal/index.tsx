@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Room } from "@/interfaces/room.interface";
+import { addRoomApi, uploadRoomImageApi } from "@/services/room.api";
 
 export interface LocationType {
   id: number;
@@ -24,14 +25,12 @@ interface AddRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  onSubmit: (data: Partial<Room>, files: File[]) => void;
 }
 
 export default function AddRoomModal({
   isOpen,
   onClose,
   onSuccess,
-  onSubmit,
 }: AddRoomModalProps) {
   const [formData, setFormData] = useState<Partial<Room>>({
     tenPhong: "",
@@ -53,6 +52,7 @@ export default function AddRoomModal({
     doXe: false,
   });
   const [files, setFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // fetch locations
   const { data: locations = [], isLoading } = useQuery<LocationType[]>({
@@ -81,9 +81,20 @@ export default function AddRoomModal({
   };
 
   const handleSubmit = async () => {
-    onSubmit(formData, files);
-    onSuccess();
-    onClose();
+    try {
+      setIsSubmitting(true);
+      const newRoom = await addRoomApi(formData);
+      for (const file of files) {
+        await uploadRoomImageApi(newRoom.id, file);
+      }
+
+      onSuccess();
+      onClose();
+    } catch (err) {
+      console.error("🚨 Failed to create room:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -150,8 +161,6 @@ export default function AddRoomModal({
               />
             </div>
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium">Description</label>
             <Textarea
@@ -161,8 +170,6 @@ export default function AddRoomModal({
               className="resize-none"
             />
           </div>
-
-          {/* Location */}
           <div>
             <label className="block text-sm font-medium">Location</label>
             <select
@@ -179,7 +186,6 @@ export default function AddRoomModal({
             </select>
           </div>
 
-          {/* Multi image upload */}
           <div>
             <label className="block text-sm font-medium">Upload Images</label>
             <Input type="file" multiple onChange={handleFileChange} />
@@ -197,20 +203,19 @@ export default function AddRoomModal({
             )}
           </div>
 
-          {/* Amenities */}
           <div>
             <p className="text-sm font-medium mb-2">Amenities</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
               {[
-                "wifi",
-                "dieuHoa",
-                "hoBoi",
-                "doXe",
-                "tivi",
-                "bep",
-                "mayGiat",
-                "banLa",
-                "banUi",
+                "Wifi",
+                "AirConditioning",
+                "SwimmingPool",
+                "Parking",
+                "Television",
+                "Kitchen",
+                "WashingMachine",
+                "IroningTable",
+                "IroningBoard",
               ].map((amenity) => (
                 <label key={amenity} className="flex items-center space-x-2">
                   <input
@@ -230,7 +235,9 @@ export default function AddRoomModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Add Room</Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Adding..." : "Add Room"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

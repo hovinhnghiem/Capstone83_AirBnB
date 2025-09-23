@@ -6,7 +6,6 @@ import { useState } from "react";
 import EditRoomModal from "../_components/edit-room-modal";
 import AddRoomModal from "../_components/add-room-modal";
 import { Check, X } from "lucide-react";
-import { addRoomApi, uploadRoomImageApi } from "@/services/room.api";
 
 export default function RoomManagement() {
   const roomsHook = usePaginatedRooms(5);
@@ -71,32 +70,19 @@ export default function RoomManagement() {
                         >
                           {room.moTa}
                         </td>
-
-                        {/* Amenities */}
-                        <td
-                          className="border p-2 max-w-[120px] truncate text-xs"
-                          title={`Wifi: ${room.wifi ? "Yes" : "No"}
-AC: ${room.dieuHoa ? "Yes" : "No"}
-Pool: ${room.hoBoi ? "Yes" : "No"}
-Parking: ${room.doXe ? "Yes" : "No"}
-TV: ${room.tivi ? "Yes" : "No"}
-Kitchen: ${room.bep ? "Yes" : "No"}
-Washing: ${room.mayGiat ? "Yes" : "No"}
-Iron: ${room.banLa ? "Yes" : "No"}
-Clothes Iron: ${room.banUi ? "Yes" : "No"}`}
-                        >
+                        <td className="border p-2 max-w-[120px] truncate text-xs">
                           Wifi:{" "}
                           {room.wifi ? (
                             <Check className="inline w-4 h-4" />
                           ) : (
                             <X className="inline w-4 h-4" />
-                          )}{" "}
+                          )}
                           · AC:{" "}
                           {room.dieuHoa ? (
                             <Check className="inline w-4 h-4" />
                           ) : (
                             <X className="inline w-4 h-4" />
-                          )}{" "}
+                          )}
                           · Pool:{" "}
                           {room.hoBoi ? (
                             <Check className="inline w-4 h-4" />
@@ -109,7 +95,7 @@ Clothes Iron: ${room.banUi ? "Yes" : "No"}`}
                             <Check className="inline w-4 h-4" />
                           ) : (
                             <X className="inline w-4 h-4" />
-                          )}{" "}
+                          )}
                           · Kitchen:{" "}
                           {room.bep ? (
                             <Check className="inline w-4 h-4" />
@@ -122,7 +108,7 @@ Clothes Iron: ${room.banUi ? "Yes" : "No"}`}
                             <Check className="inline w-4 h-4" />
                           ) : (
                             <X className="inline w-4 h-4" />
-                          )}{" "}
+                          )}
                           · Iron:{" "}
                           {room.banLa ? (
                             <Check className="inline w-4 h-4" />
@@ -171,7 +157,6 @@ Clothes Iron: ${room.banUi ? "Yes" : "No"}`}
             </table>
           </div>
 
-          {/* Pagination */}
           <div className="flex justify-between items-center mt-4">
             <Button
               variant="outline"
@@ -199,27 +184,11 @@ Clothes Iron: ${room.banUi ? "Yes" : "No"}`}
         </CardContent>
       </Card>
 
-      {/* Add Modal */}
       <AddRoomModal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
         onSuccess={roomsHook.refetch}
-        onSubmit={async (data, files) => {
-          try {
-            const newRoom = await addRoomApi(data);
-
-            for (const file of files) {
-              await uploadRoomImageApi(newRoom.id, file);
-            }
-
-            console.log("Room created successfully");
-          } catch (err) {
-            console.error("Failed to create room:", err);
-          }
-        }}
       />
-
-      {/* Edit Modal */}
       <EditRoomModal
         room={editingRoom}
         isOpen={isEditOpen}
