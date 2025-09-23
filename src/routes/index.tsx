@@ -12,8 +12,9 @@ const RoomManagement = lazy(() => import("../pages/AdminTemplates/Room-Managemen
 const AuthTemplates = lazy(() => import("../pages/AuthTemplates"));
 const LoginPage = lazy(() => import("../pages/AuthTemplates/LoginPage"));
 const UserManagement = lazy(() => import("../pages/AdminTemplates/User-Management"));
-
- const HomeTemplate = lazy(() => import("../pages/HomeTemplate"));
+// 👉 Thêm RoomPage
+const RoomsPage = lazy(() => import("../pages/HomeTemplate/ListRoom"));
+const HomeTemplate = lazy(() => import("../pages/HomeTemplate"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
   return (
@@ -31,6 +32,7 @@ export const routes: RouteObject[] = [
       // { index: true, element: withSuspense(HomePage) }, // "/" load HomePage
       // có thể thêm các page con khác ở đây, ví dụ:
       // { path: "about", element: withSuspense(AboutPage) },
+      { path: "rooms", element: withSuspense(RoomsPage) },
     ],
   },
   {
