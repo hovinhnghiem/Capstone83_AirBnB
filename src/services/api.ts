@@ -15,10 +15,8 @@ api.interceptors.request.use((config: any) => {
   if (!config.headers) {
     config.headers = {};
   }
-  config.headers = {
-    ...config.headers,
-    TokenCybersoft: import.meta.env.VITE_TOKEN_CYBERSOFT,
-  };
+  config.headers["TokenCybersoft"] = import.meta.env.VITE_TOKEN_CYBERSOFT;
+
   console.log("Headers being sent:", config.headers);
   if (
     accessToken &&
