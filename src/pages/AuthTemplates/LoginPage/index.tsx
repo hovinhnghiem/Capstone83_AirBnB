@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginApi } from "@/services/auth.api";
 import { useAuthStore } from "@/store/auth.slice";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Home } from "lucide-react";
@@ -25,6 +25,7 @@ type LoginForm = z.infer<typeof schema>;
 export default function LoginPage() {
   const { setUser } = useAuthStore();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -41,6 +42,11 @@ export default function LoginPage() {
     onSuccess: (data) => {
       if (data) {
         setUser(data);
+        const redirect = searchParams.get("redirect");
+        if (redirect) {
+          navigate(redirect, { replace: true });
+          return;
+        }
         const role = data.role?.toUpperCase();
         navigate(role === "ADMIN" ? "/admin/dashboard" : "/", { replace: true });
       }
