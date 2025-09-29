@@ -1,4 +1,5 @@
 import api from "./api";
+<<<<<<< HEAD
 import type { PaginatedResponse } from "@/interfaces/room.interface";
 import type { Booking } from "@/interfaces/booking.interface";
 
@@ -56,3 +57,24 @@ export const deleteBookingApi = async (id: number): Promise<void> => {
     throw error;
   }
 };
+=======
+
+export interface BookingPayload {
+  maPhong: number;
+  ngayDen: string; // ISO yyyy-mm-dd
+  ngayDi: string;  // ISO yyyy-mm-dd
+  soLuongKhach: number;
+}
+
+export const bookingApi = {
+  getByRoom: async (roomId: number) => {
+    // Depending on backend, adjust the params/path
+    return api.get(`/dat-phong`, { params: { maPhong: roomId } });
+  },
+  create: async (payload: BookingPayload) => {
+    return api.post(`/dat-phong`, payload);
+  },
+};
+
+
+>>>>>>> abee16eaf57e883db702a00789680e366f4e3f5d

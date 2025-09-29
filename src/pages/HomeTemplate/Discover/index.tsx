@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { locationApi } from "@/services/locationApi";
+import { useNavigate } from "react-router-dom";
 
 interface Location {
   id: number;
@@ -10,6 +11,7 @@ interface Location {
 
 export default function Discover() {
   const [locations, setLocations] = useState<Location[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -33,6 +35,7 @@ export default function Discover() {
           <div
             key={loc.id}
             className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-100 transition cursor-pointer"
+            onClick={() => navigate(`/rooms?locationId=${loc.id}`)}
           >
             <img
               src={loc.hinhAnh}

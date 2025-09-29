@@ -26,8 +26,12 @@ const LoginPage = lazy(() => import("../pages/AuthTemplates/LoginPage"));
 const UserManagement = lazy(
   () => import("../pages/AdminTemplates/User-Management")
 );
-
+// 👉 Thêm RoomPage
+const RoomsPage = lazy(() => import("../pages/HomeTemplate/ListRoom"));
 const HomeTemplate = lazy(() => import("../pages/HomeTemplate"));
+const DetailBookingRoom = lazy(
+  () => import("../pages/HomeTemplate/Detail-BookingRoom")
+);
 
 const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
   return (
@@ -47,6 +51,9 @@ export const routes: RouteObject[] = [
       // { path: "about", element: withSuspense(AboutPage) },
     ],
   },
+  // 🔹 Đưa RoomsPage ra route top-level để không render trong HomeTemplate
+  { path: "/rooms", element: withSuspense(RoomsPage) },
+  { path: "/rooms/:id", element: withSuspense(DetailBookingRoom) },
   {
     path: "/auth",
     element: withSuspense(AuthTemplates),
