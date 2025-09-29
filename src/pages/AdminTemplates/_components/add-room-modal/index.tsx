@@ -41,19 +41,30 @@ export default function AddRoomModal({
     moTa: "",
     giaTien: 0,
     maViTri: 1,
-    wifi: false,
-    dieuHoa: false,
-    tivi: false,
-    bep: false,
-    mayGiat: false,
-    banLa: false,
-    banUi: false,
-    hoBoi: false,
-    doXe: false,
+    wifi: true,
+    dieuHoa: true,
+    tivi: true,
+    bep: true,
+    mayGiat: true,
+    banLa: true,
+    banUi: true,
+    hoBoi: true,
+    doXe: true,
   });
+
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const amenities = [
+    { key: "wifi", label: "Wifi" },
+    { key: "dieuHoa", label: "Air Conditioning" },
+    { key: "tivi", label: "Television" },
+    { key: "bep", label: "Kitchen" },
+    { key: "mayGiat", label: "Washing Machine" },
+    { key: "banLa", label: "Ironing Table" },
+    { key: "banUi", label: "Iron" },
+    { key: "hoBoi", label: "Swimming Pool" },
+    { key: "doXe", label: "Parking" },
+  ];
   const { data: locations = [], isLoading } = useQuery<LocationType[]>({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -61,7 +72,7 @@ export default function AddRoomModal({
         headers: { TokenCybersoft: import.meta.env.VITE_TOKEN_CYBERSOFT },
       });
       const data = await res.json();
-      return data.content ?? data;
+      return Array.isArray(data.content) ? data.content : [];
     },
   });
 
@@ -83,8 +94,9 @@ export default function AddRoomModal({
     try {
       setIsSubmitting(true);
       const newRoom = await addRoomApi(formData);
+
       for (const file of files) {
-        await uploadRoomImageApi(newRoom.id, file);
+        await uploadRoomImageApi(newRoom.content.id, file);
       }
 
       onSuccess();
@@ -176,11 +188,12 @@ export default function AddRoomModal({
               className="w-full border p-2 rounded"
               disabled={isLoading}
             >
-              {locations.map((loc) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.tenViTri} -- {loc.tinhThanh}
-                </option>
-              ))}
+              {Array.isArray(locations) &&
+                locations.map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    {String(loc.tenViTri)} -- {String(loc.tinhThanh)}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -204,25 +217,15 @@ export default function AddRoomModal({
           <div>
             <p className="text-sm font-medium mb-2">Amenities</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
-              {[
-                "Wifi",
-                "AirConditioning",
-                "SwimmingPool",
-                "Parking",
-                "Television",
-                "Kitchen",
-                "WashingMachine",
-                "IroningTable",
-                "IroningBoard",
-              ].map((amenity) => (
-                <label key={amenity} className="flex items-center space-x-2">
+              {amenities.map((a) => (
+                <label key={a.key} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
-                    checked={Boolean(formData[amenity as keyof Room])}
-                    onChange={() => handleCheckboxChange(amenity as keyof Room)}
+                    checked={Boolean(formData[a.key as keyof Room])}
+                    onChange={() => handleCheckboxChange(a.key as keyof Room)}
                     className="h-4 w-4 accent-primary"
                   />
-                  <span className="capitalize">{amenity}</span>
+                  <span>{a.label}</span>
                 </label>
               ))}
             </div>
