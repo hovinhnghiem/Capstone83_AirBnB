@@ -44,36 +44,36 @@ export const addRoomApi = async (data: Partial<Room>) => {
   try {
     const payload: Room = {
       id: 0,
-      tenPhong: data.tenPhong ?? "",
-      khach: data.khach ?? 0,
-      phongNgu: data.phongNgu ?? 0,
-      giuong: data.giuong ?? 0,
-      phongTam: data.phongTam ?? 0,
+      tenPhong: data.tenPhong ?? "Untitled Room",
+      khach: data.khach ?? 1,
+      phongNgu: data.phongNgu ?? 1,
+      giuong: data.giuong ?? 1,
+      phongTam: data.phongTam ?? 1,
       moTa: data.moTa ?? "",
       giaTien: data.giaTien ?? 0,
-      maViTri: data.maViTri ?? 1,
+      maViTri: data.maViTri && data.maViTri > 0 ? data.maViTri : 1,
       hinhAnh: data.hinhAnh ?? "",
-      wifi: data.wifi ?? true,
-      dieuHoa: data.dieuHoa ?? true,
-      tivi: data.tivi ?? true,
-      bep: data.bep ?? true,
-      mayGiat: data.mayGiat ?? true,
-      banLa: data.banLa ?? true,
-      banUi: data.banUi ?? true,
-      hoBoi: data.hoBoi ?? true,
-      doXe: data.doXe ?? true,
+      wifi: data.wifi ?? false,
+      dieuHoa: data.dieuHoa ?? false,
+      tivi: data.tivi ?? false,
+      bep: data.bep ?? false,
+      mayGiat: data.mayGiat ?? false,
+      banLa: data.banLa ?? false,
+      banUi: data.banUi ?? false,
+      hoBoi: data.hoBoi ?? false,
+      doXe: data.doXe ?? false,
     };
+
     const response = await api.post<Room>("/phong-thue", payload, {
       headers: { "Content-Type": "application/json" },
     });
 
     return response.data;
   } catch (err: any) {
-    console.error("🚨 Add room failed:", {
+    console.error(" Add room failed:", {
       status: err.response?.status,
-      message: err.response?.statusText,
       data: err.response?.data,
-      headers: err.config?.headers,
+      payload: data,
     });
     throw err;
   }
@@ -91,6 +91,7 @@ export const addRoomApi = async (data: Partial<Room>) => {
 // };
 export const uploadRoomImageApi = async (roomId: number, file: File) => {
   const formData = new FormData();
+  console.log("roomId:", roomId);
   formData.append("formFile", file);
   formData.append("maPhong", roomId.toString());
 

@@ -12,19 +12,19 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
       <ScrollArea className="h-[calc(100vh-56px)] p-2">
         <nav className="mt-2 grid gap-1">
           <NavItem
-            to="/admin/location"
+            to="/admin/location-management"
             icon={<MapPin className="h-4 w-4" />}
             onClick={onNavigate}
           >
-            Location Information
+            Location Management
           </NavItem>
 
           <NavItem
-            to="/admin/room-info"
+            to="/admin/booking-management"
             icon={<Home className="h-4 w-4" />}
             onClick={onNavigate}
           >
-            Room Information
+            Booking Management
           </NavItem>
 
           <NavItem
@@ -47,7 +47,6 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
     </div>
   );
 }
-
 
 function NavItem({
   to,

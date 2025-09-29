@@ -27,7 +27,9 @@ export default function Discover() {
 
   return (
     <section className="mt-10">
-      <h2 className="text-2xl font-bold mb-6">Khám phá những điểm đến gần đây</h2>
+      <h2 className="text-2xl font-bold mb-6">
+        Khám phá những điểm đến gần đây
+      </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
         {locations.map((loc) => (
           <div
