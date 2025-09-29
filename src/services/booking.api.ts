@@ -1,5 +1,5 @@
 import api from "./api";
-<<<<<<< HEAD
+
 import type { PaginatedResponse } from "@/interfaces/room.interface";
 import type { Booking } from "@/interfaces/booking.interface";
 
@@ -57,7 +57,7 @@ export const deleteBookingApi = async (id: number): Promise<void> => {
     throw error;
   }
 };
-=======
+
 
 export interface BookingPayload {
   maPhong: number;
@@ -77,4 +77,3 @@ export const bookingApi = {
 };
 
 
->>>>>>> abee16eaf57e883db702a00789680e366f4e3f5d
