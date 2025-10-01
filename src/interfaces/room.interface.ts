@@ -41,3 +41,9 @@ export interface LocationType {
   quocGia: string;
   hinhAnh: string;
 }
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  content: T;
+}

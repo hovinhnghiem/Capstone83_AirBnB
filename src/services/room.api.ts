@@ -1,5 +1,9 @@
 import api from "./api";
-import type { Room, PaginatedResponse } from "@/interfaces/room.interface";
+import type {
+  Room,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/interfaces/room.interface";
 
 export type RoomPaginated = PaginatedResponse<Room>;
 
@@ -30,12 +34,59 @@ export const getRoomsPaginatedApi = async (
   return response.data;
 };
 
-export const updateRoomApi = async (id: number, data: Partial<Room>) => {
+export const getRoomByIdApi = async (id: number): Promise<Room> => {
+  const { data } = await api.get(`/phong-thue/${id}`);
+  return data?.content ?? data;
+};
+
+export const updateRoomApi = async (id: number, patch: Partial<Room>) => {
   try {
-    const response = await api.put(`/phong-thue/${id}`, data);
-    return response.data;
+    const current = await getRoomByIdApi(id);
+    const payload: Room = {
+      id,
+      tenPhong: patch.tenPhong ?? current.tenPhong ?? "",
+      khach: patch.khach ?? current.khach ?? 0,
+      phongNgu: patch.phongNgu ?? current.phongNgu ?? 0,
+      giuong: patch.giuong ?? current.giuong ?? 0,
+      phongTam: patch.phongTam ?? current.phongTam ?? 0,
+      moTa: patch.moTa ?? current.moTa ?? "",
+      giaTien: patch.giaTien ?? current.giaTien ?? 0,
+      maViTri: patch.maViTri ?? current.maViTri ?? 1,
+      hinhAnh: patch.hinhAnh ?? current.hinhAnh ?? "",
+      wifi: patch.wifi ?? current.wifi ?? false,
+      dieuHoa: patch.dieuHoa ?? current.dieuHoa ?? false,
+      tivi: patch.tivi ?? current.tivi ?? false,
+      bep: patch.bep ?? current.bep ?? false,
+      mayGiat: patch.mayGiat ?? current.mayGiat ?? false,
+      banLa: patch.banLa ?? current.banLa ?? false,
+      banUi: patch.banUi ?? current.banUi ?? false,
+      hoBoi: patch.hoBoi ?? current.hoBoi ?? false,
+      doXe: patch.doXe ?? current.doXe ?? false,
+    };
+
+    const res = await api.put(`/phong-thue/${id}`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return res.data;
   } catch (err: any) {
-    console.error("Update failed:", err.response?.status, err.response?.data);
+    console.error(" Update failed:", {
+      status: err.response?.status,
+      data: err.response?.data,
+      payload: patch,
+    });
+    throw err;
+  }
+};
+
+export const deleteRoomApi = async (id: number) => {
+  try {
+    const res = await api.delete(`/phong-thue/${id}`);
+    return res.data;
+  } catch (err: any) {
+    console.error("Delete failed:", {
+      status: err.response?.status,
+      data: err.response?.data,
+    });
     throw err;
   }
 };
@@ -64,11 +115,11 @@ export const addRoomApi = async (data: Partial<Room>) => {
       doXe: data.doXe ?? false,
     };
 
-    const response = await api.post<Room>("/phong-thue", payload, {
+    const response = await api.post<ApiResponse<Room>>("/phong-thue", payload, {
       headers: { "Content-Type": "application/json" },
     });
 
-    return response.data;
+    return response.data.content;
   } catch (err: any) {
     console.error(" Add room failed:", {
       status: err.response?.status,
@@ -79,29 +130,20 @@ export const addRoomApi = async (data: Partial<Room>) => {
   }
 };
 
-// export const uploadRoomImageApi = async (roomId: number, file: File) => {
-//   const formData = new FormData();
-//   formData.append("formFile", file);
-//   formData.append("maPhong", String(roomId));
-
-//   const res = await api.post("/phong-thue/upload-hinh-phong", formData, {
-//     headers: { "Content-Type": "multipart/form-data" },
-//   });
-//   return res.data;
-// };
 export const uploadRoomImageApi = async (roomId: number, file: File) => {
   const formData = new FormData();
   console.log("roomId:", roomId);
+
   formData.append("formFile", file);
-  formData.append("maPhong", roomId.toString());
 
   try {
-    const res = await api.post("/phong-thue/upload-hinh-phong", formData, {
+    const res = await api.post(`/phong-thue/upload-hinh-phong`, formData, {
+      params: { maPhong: roomId },
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
   } catch (err: any) {
-    console.error("🚨 Upload image failed:", {
+    console.error(" Upload image failed:", {
       status: err.response?.status,
       message: err.response?.statusText,
       data: err.response?.data,
@@ -109,6 +151,7 @@ export const uploadRoomImageApi = async (roomId: number, file: File) => {
     throw err;
   }
 };
+
 export const getUsersCountApi = async (): Promise<number> => {
   const res = await api.get("/users");
   return res.data?.content ? res.data.content.length : res.data.length;

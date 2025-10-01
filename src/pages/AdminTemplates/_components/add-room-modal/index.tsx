@@ -96,7 +96,7 @@ export default function AddRoomModal({
       const newRoom = await addRoomApi(formData);
 
       for (const file of files) {
-        await uploadRoomImageApi(newRoom.content.id, file);
+        await uploadRoomImageApi(newRoom.id, file);
       }
 
       onSuccess();

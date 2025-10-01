@@ -6,12 +6,23 @@ import { useState } from "react";
 import EditRoomModal from "../_components/edit-room-modal";
 import AddRoomModal from "../_components/add-room-modal";
 import { Check, X } from "lucide-react";
+import { deleteRoomApi } from "@/services/room.api";
 
 export default function RoomManagement() {
   const roomsHook = usePaginatedRooms(5);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const handleDelete = async (roomId: number, name: string) => {
+    if (confirm(`Are you sure you want to delete room "${name}"?`)) {
+      try {
+        await deleteRoomApi(roomId);
+        roomsHook.refetch();
+      } catch (error) {
+        console.error("Failed to delete room:", error);
+      }
+    }
+  };
 
   return (
     <div className="p-6">
@@ -147,7 +158,11 @@ export default function RoomManagement() {
                           >
                             Edit
                           </Button>
-                          <Button size="sm" variant="destructive">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(room.id, room.tenPhong)}
+                          >
                             Delete
                           </Button>
                         </td>
