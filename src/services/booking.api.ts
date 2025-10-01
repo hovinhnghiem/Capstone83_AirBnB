@@ -24,12 +24,27 @@ export const addBookingApi = async (
   booking: Partial<Booking>
 ): Promise<Booking> => {
   try {
+    console.log("Creating booking with payload:", booking);
     const { data } = await api.post("/dat-phong", booking, {
       headers: { "Content-Type": "application/json" },
     });
-    return data;
+    console.log("Booking creation response:", data);
+    
+    // Handle different response formats
+    if (data?.content) {
+      return data.content;
+    } else if (data?.data) {
+      return data.data;
+    } else {
+      return data;
+    }
   } catch (error: any) {
-    console.error(" Add booking failed:", error.response?.data || error);
+    console.error("Add booking failed:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      payload: booking
+    });
     throw error;
   }
 };
@@ -63,7 +78,36 @@ export interface BookingPayload {
   ngayDen: string; // ISO yyyy-mm-dd
   ngayDi: string; // ISO yyyy-mm-dd
   soLuongKhach: number;
+  maNguoiDung: number;
 }
+
+export const getBookingsByUserIdApi = async (userId: number): Promise<Booking[]> => {
+  try {
+    console.log(`Fetching bookings for user ${userId} from API...`);
+    const { data } = await api.get(`/dat-phong/lay-theo-nguoi-dung/${userId}`);
+    console.log("API response:", data);
+    
+    // Handle different response formats
+    if (data?.content) {
+      return Array.isArray(data.content) ? data.content : [];
+    } else if (Array.isArray(data)) {
+      return data;
+    } else if (data?.data) {
+      return Array.isArray(data.data) ? data.data : [];
+    } else {
+      console.warn("Unexpected API response format:", data);
+      return [];
+    }
+  } catch (error: any) {
+    console.error("Error fetching user bookings:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      userId
+    });
+    return [];
+  }
+};
 
 export const bookingApi = {
   getByRoom: async (roomId: number) => {
@@ -72,5 +116,8 @@ export const bookingApi = {
   },
   create: async (payload: BookingPayload) => {
     return api.post(`/dat-phong`, payload);
+  },
+  getByUser: async (userId: number) => {
+    return getBookingsByUserIdApi(userId);
   },
 };

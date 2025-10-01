@@ -114,3 +114,17 @@ export const getUser = (): CurrentUser | null => {
 export const clearUser = () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
 };
+
+export const getUserByIdApi = async (userId: number): Promise<CurrentUser | null> => {
+  try {
+    const response = await api.get<BaseApiResponse<CurrentUser>>(`/users/${userId}`);
+    return response.data.content;
+  } catch (error: any) {
+    console.error("getUserByIdApi error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    return null;
+  }
+};

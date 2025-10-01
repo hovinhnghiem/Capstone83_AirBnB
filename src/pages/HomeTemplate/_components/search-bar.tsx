@@ -42,12 +42,32 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = "" }) => {
   }, [locations, searchTerm]);
 
   const handleSearch = () => {
-    if (!selectedLocation) return;
+    if (!selectedLocation) {
+      alert("Vui lòng chọn địa điểm!");
+      return;
+    }
+    if (!checkIn) {
+      alert("Vui lòng chọn ngày nhận phòng!");
+      return;
+    }
+    if (!checkOut) {
+      alert("Vui lòng chọn ngày trả phòng!");
+      return;
+    }
+    if (new Date(checkIn) >= new Date(checkOut)) {
+      alert("Ngày trả phòng phải sau ngày nhận phòng!");
+      return;
+    }
+    if (new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) {
+      alert("Ngày nhận phòng không thể trong quá khứ!");
+      return;
+    }
+    
     const params = new URLSearchParams();
     params.set("locationId", String(selectedLocation.id));
-    if (checkIn) params.set("checkIn", checkIn);
-    if (checkOut) params.set("checkOut", checkOut);
-    if (guests) params.set("guests", String(guests));
+    params.set("checkIn", checkIn);
+    params.set("checkOut", checkOut);
+    params.set("guests", String(guests));
     navigate(`/rooms?${params.toString()}`);
   };
 
@@ -134,9 +154,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = "" }) => {
 
           <button
             onClick={handleSearch}
-            disabled={!selectedLocation}
+            disabled={!selectedLocation || !checkIn || !checkOut}
             className={`ml-auto p-4 rounded-xl shadow-lg transition-all duration-200 ${
-              selectedLocation
+              selectedLocation && checkIn && checkOut
                 ? "bg-gradient-to-r from-rose-500 to-pink-600 text-white hover:from-rose-600 hover:to-pink-700 hover:scale-105 shadow-rose-200"
                 : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}

@@ -123,30 +123,26 @@ const Header: React.FC = () => {
                           </p>
                         </div>
                         <div className="py-2">
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
+                        <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              navigate("/profile/trips");
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700  hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                           >
-                            Tin nhắn
-                          </a>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
+                            Chuyến đi của tôi
+                          </button>
+                      
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              navigate("/profile/edit");
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700  hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
                           >
-                            Danh sách yêu thích
-                          </a>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                          >
-                            Chuyến đi
-                          </a>
-                          <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                          >
-                            Cho thuê chỗ ở của bạn
-                          </a>
+                            Chỉnh sửa hồ sơ
+                          </button>
+                      
                         </div>
                         <div className="border-t border-gray-100 py-2">
                           <a
