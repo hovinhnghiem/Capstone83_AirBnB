@@ -29,7 +29,7 @@ export const addBookingApi = async (
     });
     return data;
   } catch (error: any) {
-    console.error("🚨 Add booking failed:", error.response?.data || error);
+    console.error(" Add booking failed:", error.response?.data || error);
     throw error;
   }
 };
@@ -58,11 +58,10 @@ export const deleteBookingApi = async (id: number): Promise<void> => {
   }
 };
 
-
 export interface BookingPayload {
   maPhong: number;
   ngayDen: string; // ISO yyyy-mm-dd
-  ngayDi: string;  // ISO yyyy-mm-dd
+  ngayDi: string; // ISO yyyy-mm-dd
   soLuongKhach: number;
 }
 
@@ -75,5 +74,3 @@ export const bookingApi = {
     return api.post(`/dat-phong`, payload);
   },
 };
-
-
