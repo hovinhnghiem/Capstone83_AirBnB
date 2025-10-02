@@ -1,6 +1,7 @@
 import api from "./api";
 import type { BaseApiResponse } from "@/interfaces/base.interface";
 import type { CurrentUser } from "@/interfaces/auth.interface";
+import type { AddUserValues, User } from "@/interfaces/user.interface";
 
 export type Role = "ADMIN" | "USER";
 
@@ -73,6 +74,24 @@ export const deleteUserApi = async (userId: number): Promise<boolean> => {
       data: error.response?.data,
     });
     return false;
+  }
+};
+export const addUserApi = async (
+  values: AddUserValues
+): Promise<User | null> => {
+  try {
+    const response = await api.post<BaseApiResponse<User>>(
+      "/auth/signup",
+      values
+    );
+    return response.data.content;
+  } catch (error: any) {
+    console.error("addUserApi error:", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+    return null;
   }
 };
 

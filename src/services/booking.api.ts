@@ -1,5 +1,6 @@
 import api from "./api";
-
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import type { PaginatedResponse } from "@/interfaces/room.interface";
 import type { Booking } from "@/interfaces/booking.interface";
 
@@ -56,6 +57,10 @@ export const deleteBookingApi = async (id: number): Promise<void> => {
     console.error(" Delete booking failed:", error.response?.data || error);
     throw error;
   }
+};
+export const getBookingsByUserApi = async (userId: number) => {
+  const response = await api.get(`/dat-phong/lay-theo-nguoi-dung/${userId}`);
+  return response.data;
 };
 
 export interface BookingPayload {
