@@ -17,8 +17,6 @@ export default function UserManagement() {
   const { users, page, setPage, totalPages, isLoading, queryClient } =
     usePaginatedUsers(5, keyword);
 
-  const currentUser = JSON.parse(localStorage.getItem("user")!);
-
   const updateMutation = useMutation({
     mutationFn: (updatedUser: UserListItem) =>
       updateUserApi(updatedUser.id, updatedUser),

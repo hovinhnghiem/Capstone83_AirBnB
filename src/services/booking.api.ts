@@ -1,6 +1,4 @@
 import api from "./api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import type { PaginatedResponse } from "@/interfaces/room.interface";
 import type { Booking } from "@/interfaces/booking.interface";
 

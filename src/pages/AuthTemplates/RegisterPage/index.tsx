@@ -15,7 +15,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  ArrowRight,
   Home,
   UserCheck,
 } from "lucide-react";

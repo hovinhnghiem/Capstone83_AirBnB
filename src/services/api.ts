@@ -1,5 +1,4 @@
 import axios, { type AxiosInstance } from "axios";
-import type { CurrentUser } from "@/interfaces/auth.interface";
 import { useAuthStore } from "@/store/auth.slice";
 
 const api: AxiosInstance = axios.create({
