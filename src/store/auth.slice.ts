@@ -2,7 +2,6 @@ import type { CurrentUser } from "@/interfaces/auth.interface";
 import { create } from "zustand";
 import api from "@/services/api";
 
-const userLocal = localStorage.getItem("user");
 
 type AuthStore = {
   user: CurrentUser | null;

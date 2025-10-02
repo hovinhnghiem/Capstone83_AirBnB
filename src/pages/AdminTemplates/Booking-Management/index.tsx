@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   getAllBookingsApi,
-  addBookingApi,
-  updateBookingApi,
   deleteBookingApi,
 } from "@/services/booking.api";
 import AddBookingModal from "../_components/add-booking-modal";
@@ -20,12 +18,6 @@ export default function BookingManagement() {
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
     queryKey: ["bookings"],
     queryFn: getAllBookingsApi,
-  });
-
-  const updateBooking = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<Booking> }) =>
-      updateBookingApi(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["bookings"] }),
   });
 
   const deleteBooking = useMutation({

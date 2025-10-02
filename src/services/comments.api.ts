@@ -43,8 +43,11 @@ const enhanceCommentsWithUserInfo = async (comments: Comment[]): Promise<Comment
   // Fetch user information for all unique user IDs
   const userPromises = userIds.map(async (userId) => {
     try {
-      const user = await getUserByIdApi(userId);
-      return { userId, user };
+      if (userId && userId > 0) {
+        const user = await getUserByIdApi(userId);
+        return { userId, user };
+      }
+      return { userId, user: null };
     } catch (error) {
       return { userId, user: null };
     }
@@ -63,10 +66,10 @@ const enhanceCommentsWithUserInfo = async (comments: Comment[]): Promise<Comment
     }
     
     // If this is the current user's comment, use current user's name
-    if (userId === currentUser?.id) {
+    if (userId === currentUser?.id && currentUser) {
       return {
         ...comment,
-        tenNguoiDung: currentUser.name,
+        tenNguoiDung: currentUser.name || 'Người dùng',
         maNguoiDung: userId // Normalize the field
       };
     }

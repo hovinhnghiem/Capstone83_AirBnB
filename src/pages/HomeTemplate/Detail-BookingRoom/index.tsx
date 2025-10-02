@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import api from '@/services/api';
 import type { Room } from '@/interfaces/room.interface';
@@ -97,7 +97,7 @@ export default function DetailBookingRoom() {
       return;
     }
     
-    if (new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) {
+    if (new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0))) {
       alert('Ngày nhận phòng không thể trong quá khứ!');
       return;
     }
@@ -331,7 +331,7 @@ export default function DetailBookingRoom() {
                       let userName = comment.tenNguoiDung || comment.user?.name;
                       
                       // Priority 1: If this is the current logged in user's comment, use current user's name
-                      if (userId === user?.id) {
+                      if (userId === user?.id && user) {
                         userName = user.name || 'Bạn';
                       }
                       // Priority 2: If we already have username, keep it
@@ -358,6 +358,9 @@ export default function DetailBookingRoom() {
                           userName = 'Khách';
                         }
                       }
+                      
+                      // Ensure userName is never undefined
+                      userName = userName || 'Khách';
                       
                       const userInitial = userName.charAt(0).toUpperCase();
                       const commentContent = comment.noiDung || 'Nội dung trống';
@@ -443,12 +446,12 @@ export default function DetailBookingRoom() {
                       min={new Date().toISOString().split('T')[0]}
                       onChange={(e) => setCheckIn(e.target.value)} 
                       className={`w-full border rounded-lg px-3 py-2 ${
-                        checkIn && new Date(checkIn) < new Date().setHours(0, 0, 0, 0) 
+                        checkIn && new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0)) 
                           ? 'border-red-300 bg-red-50' 
                           : 'border-gray-300'
                       }`} 
                     />
-                    {checkIn && new Date(checkIn) < new Date().setHours(0, 0, 0, 0) && (
+                    {checkIn && new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0)) && (
                       <p className="text-xs text-red-600 mt-1">Ngày không thể trong quá khứ</p>
                     )}
                   </div>
@@ -514,14 +517,14 @@ export default function DetailBookingRoom() {
                   disabled={
                     !checkIn || 
                     !checkOut || 
-                    (checkIn && new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) ||
+                    (checkIn && new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0))) ||
                     (checkOut && checkIn && new Date(checkOut) <= new Date(checkIn)) ||
                     guests > room.khach
                   } 
                   className={`w-full mt-4 py-3 rounded-xl text-white font-semibold transition-all ${
                     checkIn && 
                     checkOut && 
-                    !(checkIn && new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) &&
+                    !(checkIn && new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0))) &&
                     !(checkOut && checkIn && new Date(checkOut) <= new Date(checkIn)) &&
                     guests <= room.khach
                       ? 'bg-rose-600 hover:bg-rose-700 hover:scale-105' 
@@ -530,7 +533,7 @@ export default function DetailBookingRoom() {
                 >
                   {!checkIn || !checkOut 
                     ? 'Chọn ngày nhận và trả phòng' 
-                    : (checkIn && new Date(checkIn) < new Date().setHours(0, 0, 0, 0))
+                    : (checkIn && new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0)))
                     ? 'Ngày nhận phòng không hợp lệ'
                     : (checkOut && checkIn && new Date(checkOut) <= new Date(checkIn))
                     ? 'Ngày trả phòng không hợp lệ'

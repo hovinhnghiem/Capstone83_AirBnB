@@ -58,7 +58,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = "" }) => {
       alert("Ngày trả phòng phải sau ngày nhận phòng!");
       return;
     }
-    if (new Date(checkIn) < new Date().setHours(0, 0, 0, 0)) {
+    if (new Date(checkIn) < new Date(new Date().setHours(0, 0, 0, 0))) {
       alert("Ngày nhận phòng không thể trong quá khứ!");
       return;
     }

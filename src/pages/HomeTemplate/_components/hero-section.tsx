@@ -1,5 +1,5 @@
 import React from "react";
-import { FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaUsers } from "react-icons/fa";
+import { FaMapMarkerAlt, FaCalendarAlt, FaUsers } from "react-icons/fa";
 import SearchBar from "./search-bar";
 
 const HeroSection: React.FC = () => {
