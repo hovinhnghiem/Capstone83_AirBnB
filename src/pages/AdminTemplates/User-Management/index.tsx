@@ -7,22 +7,17 @@ import { usePaginatedUsers } from "@/hooks/paginatedUsers";
 import type { CurrentUser } from "@/interfaces/auth.interface";
 import { useState } from "react";
 import { deleteUserApi } from "@/services/auth.api";
+import AddUserModal from "../_components/add-user-modal";
 
 type UserListItem = Omit<CurrentUser, "password" | "accessToken">;
 
 export default function UserManagement() {
   const [keyword, setKeyword] = useState("");
-  const {
-    users,
-    page,
-    setPage,
-    totalPages,
-    isLoading,
-    queryClient,
-  } = usePaginatedUsers(5, keyword);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const { users, page, setPage, totalPages, isLoading, queryClient } =
+    usePaginatedUsers(5, keyword);
 
   const currentUser = JSON.parse(localStorage.getItem("user")!);
-
 
   const updateMutation = useMutation({
     mutationFn: (updatedUser: UserListItem) =>
@@ -40,12 +35,12 @@ export default function UserManagement() {
     },
   });
 
-const deleteMutation = useMutation({
-  mutationFn: (id: number) => deleteUserApi(id),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["users"] });
-  },
-});
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteUserApi(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
 
   if (isLoading) return <p className="text-center">Loading users...</p>;
 
@@ -67,6 +62,7 @@ const deleteMutation = useMutation({
             <Button variant="outline" onClick={() => setKeyword("")}>
               Clear
             </Button>
+            <Button onClick={() => setIsAddOpen(true)}>+ Add User</Button>
           </div>
         </CardHeader>
 
@@ -89,27 +85,33 @@ const deleteMutation = useMutation({
                     <td className="border p-2 truncate">{user.name}</td>
                     <td className="border p-2 truncate">{user.email}</td>
                     <td className="border p-2">
-                   <select className="px-2 pr-6 py-1 rounded-md border text-sm bg-white appearance-none focus:ring-2 focus:ring-blue-500"
-                    value={user.role} onChange={(event) => 
-                      updateMutation.mutate({...user,
-                      role: event.target.value as "USER" | "ADMIN",
-                 })
-              }
-             >
-                      <option value="USER">USER</option>
-                      <option value="ADMIN">ADMIN</option>
-                     </select>
-
+                      <select
+                        className="px-2 pr-6 py-1 rounded-md border text-sm bg-white appearance-none focus:ring-2 focus:ring-blue-500"
+                        value={user.role}
+                        onChange={(event) =>
+                          updateMutation.mutate({
+                            ...user,
+                            role: event.target.value as "USER" | "ADMIN",
+                          })
+                        }
+                      >
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                      </select>
                     </td>
                     <td className="border p-2 space-x-2">
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => {
-                           if (window.confirm("Are you sure you want to delete this user?")) {
-                           deleteMutation.mutate(user.id);
-                            }
-                         }}
+                          if (
+                            window.confirm(
+                              "Are you sure you want to delete this user?"
+                            )
+                          ) {
+                            deleteMutation.mutate(user.id);
+                          }
+                        }}
                       >
                         Delete
                       </Button>
@@ -143,6 +145,11 @@ const deleteMutation = useMutation({
           </div>
         </CardContent>
       </Card>
+      <AddUserModal
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["users"] })}
+      />
     </div>
   );
 }
