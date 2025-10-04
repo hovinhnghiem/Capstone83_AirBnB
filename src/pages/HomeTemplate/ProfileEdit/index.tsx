@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaMars, FaVenus, FaCamera, FaArrowLeft, FaSave, FaCheck } from "react-icons/fa";
-import { updateUserApi, getUser } from "@/services/auth.api";
+import { FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaMars, FaVenus, FaCamera, FaArrowLeft, FaSave, FaCheck, FaUpload, FaTimes } from "react-icons/fa";
+import { updateUserApi, getUser, uploadAvatarApi, uploadUserAvatarApi } from "@/services/auth.api";
 import type { CurrentUser } from "@/interfaces/auth.interface";
 import SimpleHeader from "../_components/simple-header";
 
@@ -18,6 +18,12 @@ const ProfileEdit: React.FC = () => {
     gender: true,
     avatar: "",
   });
+  
+  // Avatar upload states
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const currentUser = getUser();
@@ -42,6 +48,96 @@ const ProfileEdit: React.FC = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value
     }));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Vui lòng chọn file ảnh hợp lệ');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Kích thước file không được vượt quá 5MB');
+        return;
+      }
+      
+      setAvatarFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadAvatar = async () => {
+    if (!avatarFile || !user) return;
+    
+    console.log('Starting avatar upload:', {
+      userId: user.id,
+      fileName: avatarFile.name,
+      fileSize: avatarFile.size,
+      fileType: avatarFile.type,
+      user: user
+    });
+    
+    setUploadingAvatar(true);
+    try {
+      // Use different upload method based on user role
+      const isAdmin = user.role === 'ADMIN';
+      const result = isAdmin 
+        ? await uploadAvatarApi(user.id, avatarFile)  // Admin: try server upload first
+        : await uploadUserAvatarApi(user.id, avatarFile);  // User: use base64 method
+      
+      console.log('Upload result:', result, 'User role:', user.role);
+      
+      if (result?.avatarUrl) {
+        // Update local state
+        setFormData(prev => ({ ...prev, avatar: result.avatarUrl }));
+        setUser(prev => prev ? { ...prev, avatar: result.avatarUrl } : null);
+        
+        // Update localStorage with new avatar
+        const updatedUser = { ...user, avatar: result.avatarUrl };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Clear the preview and file after successful upload
+        setAvatarFile(null);
+        setAvatarPreview("");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        
+        // Check if avatar URL is base64 (local storage) or server URL
+        const isLocalAvatar = result.avatarUrl.startsWith('data:image/');
+        if (isLocalAvatar) {
+          alert('Cập nhật ảnh đại diện thành công! Ảnh đã được lưu vào hồ sơ của bạn (lưu cục bộ).');
+        } else {
+          alert('Cập nhật ảnh đại diện thành công! Ảnh đã được lưu vào hồ sơ của bạn.');
+        }
+      } else {
+        console.error('Upload failed - no avatarUrl in result:', result);
+        alert('Có lỗi xảy ra khi upload ảnh đại diện - không nhận được URL ảnh');
+      }
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('Có lỗi xảy ra khi upload ảnh đại diện: ' + (error as Error).message);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const removeAvatarPreview = () => {
+    setAvatarFile(null);
+    setAvatarPreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,7 +210,14 @@ const ProfileEdit: React.FC = () => {
               <div className="lg:col-span-1">
                 <div className="text-center">
                   <div className="relative inline-block group">
-                    {formData.avatar ? (
+                    {/* Avatar Display */}
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Avatar Preview"
+                        className="w-40 h-40 rounded-full object-cover border-4 border-white shadow-xl group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : formData.avatar ? (
                       <img
                         src={formData.avatar}
                         alt="Avatar"
@@ -125,17 +228,70 @@ const ProfileEdit: React.FC = () => {
                         <FaUser className="w-20 h-20 text-blue-500" />
                       </div>
                     )}
+                    
+                    {/* Upload Button */}
                     <button
                       type="button"
+                      onClick={() => fileInputRef.current?.click()}
                       className="absolute bottom-2 right-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full p-3 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110"
                     >
                       <FaCamera className="w-4 h-4" />
                     </button>
+                    
+                    {/* Remove Preview Button */}
+                    {avatarPreview && (
+                      <button
+                        type="button"
+                        onClick={removeAvatarPreview}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-all duration-300 shadow-lg"
+                      >
+                        <FaTimes className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
+                  
+                  {/* Hidden File Input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                  
                   <p className="text-sm text-gray-500 mt-4 font-medium">Cập nhật ảnh đại diện</p>
+                  
+                  {/* Upload Actions */}
+                  {avatarFile && (
+                    <div className="mt-4 space-y-3">
+                      <div className="flex items-center gap-3 justify-center">
+                        <button
+                          type="button"
+                          onClick={uploadAvatar}
+                          disabled={uploadingAvatar}
+                          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                        >
+                          <FaUpload className="w-4 h-4" />
+                          {uploadingAvatar ? 'Đang upload...' : 'Upload ảnh'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removeAvatarPreview}
+                          className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 text-sm font-medium"
+                        >
+                          <FaTimes className="w-4 h-4" />
+                          Hủy
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        File: {avatarFile.name} ({(avatarFile.size / 1024 / 1024).toFixed(2)} MB)
+                      </p>
+                    </div>
+                  )}
+                  
                   <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
                     <p className="text-xs text-gray-600">
-                      <strong>Mẹo:</strong> Sử dụng ảnh rõ nét và chuyên nghiệp để tạo ấn tượng tốt với chủ nhà.
+                      <strong>Mẹo:</strong> Sử dụng ảnh rõ nét và chuyên nghiệp để tạo ấn tượng tốt với chủ nhà. Kích thước tối đa 5MB.
                     </p>
                   </div>
                 </div>
