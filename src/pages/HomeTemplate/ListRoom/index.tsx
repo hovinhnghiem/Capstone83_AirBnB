@@ -5,6 +5,7 @@ import api from "@/services/api";
 import type { Room } from "@/interfaces/room.interface";
 import SimpleHeader from "@/pages/HomeTemplate/_components/simple-header";
 import Footer from "@/pages/HomeTemplate/_components/footer";
+import FilterSidebar from "@/components/FilterSidebar";
 
 const RoomsPage = () => {
   const [params] = useSearchParams();
@@ -17,6 +18,12 @@ const RoomsPage = () => {
   const [locationName, setLocationName] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [filters, setFilters] = useState({
+    bedrooms: [] as number[],
+    guests: [] as number[],
+    rating: 0,
+    priceRange: [0, 1000] as [number, number]
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +54,54 @@ const RoomsPage = () => {
     if (locationName) return locationName;
     return "Vietnam";
   }, [locationName]);
+
+  // Filter and sort rooms
+  const filteredAndSortedRooms = useMemo(() => {
+    let filtered = [...rooms];
+
+    // Apply filters
+    if (filters.bedrooms.length > 0) {
+      filtered = filtered.filter(room => filters.bedrooms.includes(room.giuong));
+    }
+
+    if (filters.guests.length > 0) {
+      filtered = filtered.filter(room => filters.guests.includes(room.khach));
+    }
+
+    // Note: Rating filter disabled as Room interface doesn't include rating property
+    // if (filters.rating > 0) {
+    //   filtered = filtered.filter(room => room.saoBinhLuan >= filters.rating);
+    // }
+
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) {
+      filtered = filtered.filter(room => 
+        room.giaTien >= filters.priceRange[0] && room.giaTien <= filters.priceRange[1]
+      );
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.giaTien - b.giaTien);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.giaTien - a.giaTien);
+        break;
+      case 'rating':
+        // Note: Rating sort disabled as Room interface doesn't include rating property
+        // filtered.sort((a, b) => (b.saoBinhLuan || 0) - (a.saoBinhLuan || 0));
+        break;
+      case 'newest':
+        // Assuming newer rooms have higher IDs
+        filtered.sort((a, b) => b.id - a.id);
+        break;
+      default:
+        // Keep original order for relevance
+        break;
+    }
+
+    return filtered;
+  }, [rooms, filters, sortBy]);
 
   // Remove date validation - users can browse rooms without selecting dates
 
@@ -86,7 +141,7 @@ const RoomsPage = () => {
               
               {/* Results Count */}
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-2xl shadow-lg">
-                <div className="text-2xl font-bold">{rooms.length}</div>
+                <div className="text-2xl font-bold">{filteredAndSortedRooms.length}</div>
                 <div className="text-sm opacity-90">chỗ ở</div>
               </div>
             </div>
@@ -94,22 +149,39 @@ const RoomsPage = () => {
             {/* Enhanced Filter Bar */}
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <div className="flex flex-wrap gap-3">
-                {[
-                  { icon: FaFilter, label: "Bộ lọc", onClick: () => setShowFilters(!showFilters) },
-                  { icon: FaSort, label: "Sắp xếp", onClick: () => {} },
-                  { icon: FaUsers, label: "Phù hợp", onClick: () => {} },
-                  { icon: FaBed, label: "Phòng ngủ", onClick: () => {} },
-                  { icon: FaStar, label: "Đánh giá", onClick: () => {} }
-                ].map(({ icon: Icon, label, onClick }) => (
-                  <button
-                    key={label}
-                    onClick={onClick}
-                    className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"
+                {/* Filter Button with Active Count */}
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md ${
+                    showFilters || filters.bedrooms.length > 0 || filters.guests.length > 0 || filters.priceRange[0] > 0 || filters.priceRange[1] < 1000
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-2 border-transparent'
+                      : 'bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                  }`}
+                >
+                  <FaFilter className="w-4 h-4" />
+                  Bộ lọc
+                  {(filters.bedrooms.length > 0 || filters.guests.length > 0 || filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) && (
+                    <span className="bg-white text-blue-600 text-xs px-2 py-1 rounded-full font-bold">
+                      {[filters.bedrooms.length > 0, filters.guests.length > 0, filters.priceRange[0] > 0 || filters.priceRange[1] < 1000].filter(Boolean).length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Sort Dropdown */}
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 appearance-none cursor-pointer"
                   >
-                    <Icon className="w-4 h-4" />
-                    {label}
-                  </button>
-                ))}
+                    <option value="relevance">Độ liên quan</option>
+                    <option value="price-low">Giá thấp đến cao</option>
+                    <option value="price-high">Giá cao đến thấp</option>
+                    <option value="rating">Đánh giá cao nhất</option>
+                    <option value="newest">Mới nhất</option>
+                  </select>
+                  <FaSort className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
               </div>
               
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -159,7 +231,7 @@ const RoomsPage = () => {
                 </div>
               ) : (
                 <div className="space-y-8">
-                  {rooms.map((room) => (
+                  {filteredAndSortedRooms.map((room) => (
                     <div 
                       key={room.id} 
                       className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
@@ -266,7 +338,7 @@ const RoomsPage = () => {
                     </div>
                   ))}
                   
-                  {rooms.length === 0 && !loading && (
+                  {filteredAndSortedRooms.length === 0 && !loading && (
                     <div className="text-center py-20 bg-white rounded-2xl shadow-lg">
                       <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <FaBed className="w-16 h-16 text-blue-500" />
@@ -307,7 +379,7 @@ const RoomsPage = () => {
                   />
                   <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">{rooms.length}</div>
+                      <div className="text-2xl font-bold text-blue-600">{filteredAndSortedRooms.length}</div>
                       <div className="text-xs text-gray-500">chỗ ở</div>
                     </div>
                   </div>
@@ -332,6 +404,16 @@ const RoomsPage = () => {
       </main>
 
       <Footer />
+
+      {/* Filter Sidebar */}
+      <FilterSidebar
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
     </div>
   );
 };
