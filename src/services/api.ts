@@ -19,12 +19,8 @@ api.interceptors.request.use(async (config: any) => {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU0ODAyIiwiZW1haWwiOiJuZ29jbmd1eWVuNDU2QGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsIm5iZiI6MTc1OTEzNDAzMCwiZXhwIjoxNzU5NzM4ODMwfQ.W7CpYMOfswX6bCyCUnWEZbLFwdaFxIRMDud2hRuzgQ4";
   if (accessToken) {
     try {
-      const [header, payload] = accessToken.split(".");
-      const decodedHeader = JSON.parse(atob(header));
+      const [payload] = accessToken.split(".");
       const decodedPayload = JSON.parse(atob(payload));
-      console.log(" Header:", decodedHeader);
-      console.log(" Payload:", decodedPayload);
-
       const isExpired = decodedPayload.exp * 1000 < Date.now();
 
       if (isExpired && user?.role === "ADMIN") {
@@ -44,7 +40,6 @@ api.interceptors.request.use(async (config: any) => {
     !config.url?.includes("/auth/signup")
   ) {
     config.headers.Authorization = `Bearer ${accessToken}`;
-    console.log("Sending Authorization header:", config.headers.Authorization);
   }
 
   if (config.method && config.method.toLowerCase() !== "get") {

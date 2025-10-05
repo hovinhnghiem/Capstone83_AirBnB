@@ -164,3 +164,20 @@ export const getBookingsCountApi = async (): Promise<number> => {
   const res = await api.get("/dat-phong");
   return res.data?.content ? res.data.content.length : res.data.length;
 };
+export const searchRoomsPaginatedApi = async (
+  pageIndex: number,
+  pageSize: number,
+  keyword: string
+): Promise<RoomPaginated> => {
+  const response = await api.get<RoomPaginated>(
+    "/phong-thue/phan-trang-tim-kiem",
+    {
+      params: {
+        pageIndex,
+        pageSize,
+        keyword: keyword.trim() || "",
+      },
+    }
+  );
+  return response.data;
+};

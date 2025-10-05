@@ -8,12 +8,15 @@ import type { CurrentUser } from "@/interfaces/auth.interface";
 import { useState } from "react";
 import { deleteUserApi } from "@/services/auth.api";
 import AddUserModal from "../_components/add-user-modal";
+import EditUserModal from "../_components/edit-user-modal";
 
 type UserListItem = Omit<CurrentUser, "password" | "accessToken">;
 
 export default function UserManagement() {
   const [keyword, setKeyword] = useState("");
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserListItem | null>(null);
   const { users, page, setPage, totalPages, isLoading, queryClient } =
     usePaginatedUsers(5, keyword);
 
@@ -100,6 +103,16 @@ export default function UserManagement() {
                     <td className="border p-2 space-x-2">
                       <Button
                         size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setEditingUser(user);
+                          setIsEditOpen(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
                         variant="destructive"
                         onClick={() => {
                           if (
@@ -146,6 +159,12 @@ export default function UserManagement() {
       <AddUserModal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["users"] })}
+      />
+      <EditUserModal
+        user={editingUser}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["users"] })}
       />
     </div>

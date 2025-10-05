@@ -1,10 +1,4 @@
-import {
-  LayoutDashboard,
-  Menu,
-  Search,
-  Bell,
-  ChevronDown,
-} from "lucide-react";
+import { LayoutDashboard, Menu, Search, Bell, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,6 +29,10 @@ export default function Header({ onOpenSidebar }: HeaderProps) {
     navigate("/auth/login", { replace: true });
   };
 
+  const goToDashboard = () => {
+    navigate("/admin/dashboard");
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="flex h-14 items-center gap-2 px-3 md:px-6">
@@ -47,7 +45,10 @@ export default function Header({ onOpenSidebar }: HeaderProps) {
           </SheetTrigger>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+          onClick={goToDashboard}
+        >
           <LayoutDashboard className="h-5 w-5" />
           <span className="font-semibold">Admin</span>
           <Separator orientation="vertical" className="mx-2 h-6" />
