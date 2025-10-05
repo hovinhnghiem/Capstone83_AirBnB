@@ -34,6 +34,7 @@ const DetailBookingRoom = lazy(
 );
 const ProfileEdit = lazy(() => import("../pages/HomeTemplate/ProfileEdit"));
 const ProfileTrips = lazy(() => import("../pages/HomeTemplate/ProfileTrips"));
+const AllLocations = lazy(() => import("../pages/HomeTemplate/AllLocations"));
 
 const withSuspense = (Component: LazyExoticComponent<FC>): JSX.Element => {
   return (
@@ -56,6 +57,7 @@ export const routes: RouteObject[] = [
   // 🔹 Đưa RoomsPage ra route top-level để không render trong HomeTemplate
   { path: "/rooms", element: withSuspense(RoomsPage) },
   { path: "/rooms/:id", element: withSuspense(DetailBookingRoom) },
+  { path: "/locations", element: withSuspense(AllLocations) },
   { path: "/profile/edit", element: withSuspense(ProfileEdit) },
   { path: "/profile/trips", element: withSuspense(ProfileTrips) },
   {
