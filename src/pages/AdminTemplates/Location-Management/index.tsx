@@ -6,7 +6,7 @@ import {
   getPaginatedLocationsApi,
   deleteLocationApi,
 } from "@/services/locationApi";
-import type { Location, ApiResponse } from "@/services/locationApi";
+import type { Location } from "@/services/locationApi";
 import AddLocationModal from "../_components/add-location-modal";
 import EditLocationModal from "../_components/edit-location-modal";
 export default function LocationManagement() {
