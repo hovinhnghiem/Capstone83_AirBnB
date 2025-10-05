@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { FaHeart, FaMapMarkerAlt, FaUsers, FaBed, FaBath, FaWifi, FaUtensils, FaSnowflake, FaStar, FaFilter, FaSort } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaUsers, FaBed, FaBath, FaWifi, FaUtensils, FaSnowflake, FaStar, FaFilter } from "react-icons/fa";
 import api from "@/services/api";
 import type { Room } from "@/interfaces/room.interface";
 import SimpleHeader from "@/pages/HomeTemplate/_components/simple-header";
@@ -172,7 +172,7 @@ const RoomsPage = () => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 appearance-none cursor-pointer"
+                    className="flex items-center gap-2 px-7 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 appearance-none cursor-pointer"
                   >
                     <option value="relevance">Độ liên quan</option>
                     <option value="price-low">Giá thấp đến cao</option>
@@ -180,22 +180,8 @@ const RoomsPage = () => {
                     <option value="rating">Đánh giá cao nhất</option>
                     <option value="newest">Mới nhất</option>
                   </select>
-                  <FaSort className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>Sắp xếp theo:</span>
-                <select 
-                  value={sortBy} 
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="relevance">Độ liên quan</option>
-                  <option value="price-low">Giá thấp đến cao</option>
-                  <option value="price-high">Giá cao đến thấp</option>
-                  <option value="rating">Đánh giá cao</option>
-                </select>
               </div>
             </div>
           </div>

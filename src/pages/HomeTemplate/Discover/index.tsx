@@ -47,14 +47,20 @@ export default function Discover() {
   }, []);
 
   return (
-    <section className="py-16">
+    <section className="py-16 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="text-center mb-16">
+      <div className="text-center mb-16 max-w-6xl mx-auto">
         <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 rounded-full px-6 py-3 mb-6">
           <FaMapMarkerAlt className="w-5 h-5 text-blue-600 mr-2" />
           <span className="text-blue-700 font-semibold">Khám phá ngay</span>
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl pt-5 font-bold mb-4 leading-tight break-words" style={{
+          background: 'linear-gradient(to right, #2563eb, #9333ea)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          color: '#2563eb' // Fallback color for browsers that don't support bg-clip-text
+        }}>
           Điểm đến phổ biến
         </h2>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -64,7 +70,7 @@ export default function Discover() {
 
       {/* Loading State */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {[...Array(8)].map((_, index) => (
             <div key={index} className="animate-pulse">
               <div className="bg-gray-200 rounded-2xl h-32 mb-4"></div>
@@ -74,7 +80,7 @@ export default function Discover() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {Array.isArray(locations) && locations.length > 0 ? locations.map((loc) => (
             <div
               key={loc.id}
@@ -95,11 +101,11 @@ export default function Discover() {
               </div>
               
               {/* Content */}
-              <div className="text-center">
-                <h3 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
+              <div className="text-center px-2">
+                <h3 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 break-words">
                   {loc.tenViTri}
                 </h3>
-                <p className="text-gray-500 text-sm">{loc.tinhThanh}</p>
+                <p className="text-gray-500 text-sm line-clamp-1 break-words">{loc.tinhThanh}</p>
               </div>
             </div>
           )) : (
@@ -117,7 +123,7 @@ export default function Discover() {
       {/* CTA Button */}
       <div className="text-center mt-12">
         <button 
-          onClick={() => navigate('/rooms')}
+          onClick={() => navigate('/locations')}
           className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
         >
           Xem tất cả địa điểm
