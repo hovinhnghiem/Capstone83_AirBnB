@@ -5,7 +5,8 @@ import type { Room } from "@/interfaces/room.interface";
 import { useState } from "react";
 import EditRoomModal from "../_components/edit-room-modal";
 import AddRoomModal from "../_components/add-room-modal";
-import { Check, X } from "lucide-react";
+import { Check, X, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { deleteRoomApi } from "@/services/room.api";
 
 export default function RoomManagement() {
@@ -27,9 +28,25 @@ export default function RoomManagement() {
   return (
     <div className="p-6">
       <Card>
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex justify-between items-center flex-wrap gap-3">
           <CardTitle>Room Management</CardTitle>
-          <Button onClick={() => setIsAddOpen(true)}>+ Add Room</Button>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search rooms..."
+                value={roomsHook.search}
+                onChange={(e) => {
+                  roomsHook.setSearch(e.target.value);
+                  roomsHook.setPageIndex(1);
+                }}
+                className="pl-8 w-56"
+              />
+            </div>
+
+            <Button onClick={() => setIsAddOpen(true)}>+ Add Room</Button>
+          </div>
         </CardHeader>
         <CardContent>
           {roomsHook.error && <p className="text-red-500">{roomsHook.error}</p>}

@@ -1,14 +1,14 @@
 import type { Room } from "@/interfaces/room.interface";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getAllRoomsApi } from "@/services/room.api";
 
 export const usePaginatedRooms = (initialPageSize: number = 5) => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(initialPageSize);
-  const [totalRows, setTotalRows] = useState(0);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const fetchRooms = async () => {
     setIsLoading(true);
@@ -16,7 +16,6 @@ export const usePaginatedRooms = (initialPageSize: number = 5) => {
     try {
       const response = await getAllRoomsApi();
       setRooms(response);
-      setTotalRows(response.length);
       setPageIndex(1);
     } catch (err: any) {
       setError(err.message || "Failed to fetch rooms");
@@ -30,21 +29,28 @@ export const usePaginatedRooms = (initialPageSize: number = 5) => {
     fetchRooms();
   }, []);
 
-  const totalPages = Math.ceil(totalRows / pageSize);
+  const filteredRooms = useMemo(() => {
+    if (!search.trim()) return rooms;
+    const lower = search.toLowerCase();
+    return rooms.filter(
+      (room) =>
+        room.tenPhong.toLowerCase().includes(lower) ||
+        room.moTa.toLowerCase().includes(lower) ||
+        String(room.id).includes(lower)
+    );
+  }, [rooms, search]);
+
+  const totalPages = Math.ceil(filteredRooms.length / pageSize);
 
   const nextPage = () => {
-    if (pageIndex < totalPages) {
-      setPageIndex((prev) => prev + 1);
-    }
+    if (pageIndex < totalPages) setPageIndex((prev) => prev + 1);
   };
 
   const prevPage = () => {
-    if (pageIndex > 1) {
-      setPageIndex((prev) => prev - 1);
-    }
+    if (pageIndex > 1) setPageIndex((prev) => prev - 1);
   };
 
-  const paginatedRooms = rooms.slice(
+  const paginatedRooms = filteredRooms.slice(
     (pageIndex - 1) * pageSize,
     pageIndex * pageSize
   );
@@ -55,11 +61,13 @@ export const usePaginatedRooms = (initialPageSize: number = 5) => {
     error,
     pageIndex,
     pageSize,
-    totalRows,
+    totalRows: filteredRooms.length,
     totalPages,
     nextPage,
     prevPage,
-    setPageIndex,
     refetch: fetchRooms,
+    setPageIndex,
+    search,
+    setSearch,
   };
 };
